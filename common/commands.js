@@ -60,11 +60,13 @@ Commands.prototype.getHelp = function(){
 		var commandObj = this.commands[command];
 
 		contents += commandObj.usage.replace("%cmd%", config.command_prefix + command) + "\n";
-		contents += "  " + commandObj.description + "\n\n";
+		contents += "  " + commandObj.description + "\n";
 
 		if (commandObj.staff){
-			contents += "  STAFF ONLY\n\n";
+			contents += "  STAFF ONLY\n";
 		}
+
+		contents += "\n";
 	}
 
 	var footer = "```";
@@ -76,7 +78,7 @@ Commands.prototype.registerCommand = function(command){
 	try {
 		this.commands[command] = require("./commands/" + command)(this.bot);
 	} catch (error){
-		console.log("The command " + command + " doesn't exist!");
+		console.error("The command " + command + " doesn't exist!");
 	}
 };
 
