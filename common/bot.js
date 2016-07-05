@@ -90,10 +90,6 @@ Bot.prototype.sendMessage = function(channel, content, options, callback){
 	}
 
 	this.bot.sendMessage(channel, content.message, content.options, function(error){
-		this.bot.getBot().stopTyping(channel, (error) => {
-			console.log(error);
-		});
-
 		if (error){
 			console.error("An error occurred sending a message.");
 			console.error(error);
