@@ -42,7 +42,7 @@ function Bot(){
 
 			process.exit(1);
 		} else {
-			console.log(`Successfully logged in as ${bot.user.username}. Loading metadata...`);
+			console.log("Successfully logged in.");
 		}
 	});
 };
@@ -90,6 +90,10 @@ Bot.prototype.sendMessage = function(channel, content, options, callback){
 	}
 
 	this.bot.sendMessage(channel, content.message, content.options, function(error){
+		this.bot.getBot().stopTyping(channel, (error) => {
+			console.log(error);
+		});
+
 		if (error){
 			console.error("An error occurred sending a message.");
 			console.error(error);
