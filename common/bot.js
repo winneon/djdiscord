@@ -8,6 +8,7 @@ var config = require("./config");
 
 function Bot(){
 	this.authed = false;
+	this.ready = false;
 
 	this.bot = new discord.Client({
 		rateLimitAsError: true,
@@ -30,8 +31,19 @@ function Bot(){
 			commands.registerCommand(command);
 		}
 
-		console.log("Loaded all commands. Ready.");
-	})
+		console.log("Loaded all commands. Joining voice channel...");
+
+		this.bot.joinVoiceChannel("199665266764939265", (error, connection) => {
+			this.bot.setPlayingGame(undefined, (error) => {
+				this.ready = true;
+				console.log("Joined. Ready and listening for commands.");
+			});
+		});
+	});
+
+	this.bot.on("speaking", (channel, user) => {
+		console.log("Speaking!");
+	});
 
 	console.log("Attempting to login...");
 
@@ -89,7 +101,8 @@ Bot.prototype.sendMessage = function(channel, content, options, callback){
 		}
 	}
 
-	this.bot.sendMessage(channel, content.message, content.options, function(error){
+	this.getBot().stopTyping(channel);
+	this.getBot().sendMessage(channel, content.message, content.options, function(error){
 		if (error){
 			console.error("An error occurred sending a message.");
 			console.error(error);

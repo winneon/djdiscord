@@ -20,6 +20,7 @@ function Commands(bot){
 			args.splice(0, 1);
 
 			if (command === "help"){
+				//this.bot.getBot().deleteMessage(message);
 				this.bot.sendMessage(message.channel, {
 					message: this.getHelp()
 				});
@@ -41,6 +42,8 @@ function Commands(bot){
 Commands.prototype._checkCommand = function(command, message, args){
 	if (this.commands[command].argCount <= args.length){
 		console.log("Command: " + config.command_prefix + command);
+
+		//this.bot.getBot().deleteMessage(message);
 		this.commands[command].runCommand(message, args);
 	} else {
 		this.bot.sendMessage(message.channel, {

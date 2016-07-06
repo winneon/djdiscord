@@ -11,5 +11,14 @@ require("console-stamp")(console, {
 });
 
 var config = require("./config");
+var bot = require("./bot");
 
-require("./bot");
+process.stdin.resume();
+
+process.on("SIGINT", () => {
+	console.log("Terminating...");
+
+	bot.getBot().logout();
+
+	process.exit();
+});

@@ -15,8 +15,14 @@ function Pause(bot){
 }
 
 Pause.prototype.runCommand = function(message, args){
+	var voice = this.bot.getBot().voiceConnection;
+
+	if (voice.playing){
+		voice.pause();
+	}
+
 	this.bot.sendMessage(message.channel, {
-		message: "Successfully went through the command API!",
+		message: "Paused!",
 		mention: message.author
 	});
 }

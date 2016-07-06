@@ -1,7 +1,7 @@
 "use strict";
 
-var youtube_dl = require("youtube-dl"),
-    fs         = require("fs");
+var ytdl = require("ytdl-core"),
+    fs   = require("fs");
 
 function Add(bot){
 	if (!(this instanceof Add)){
@@ -18,19 +18,31 @@ function Add(bot){
 }
 
 Add.prototype.runCommand = function(message, args){
-	this.bot.getBot().startTyping(message.channel);
-
-	var video = youtube_dl.exec(args[0], [ "--hls-prefer-ffmpeg", "-f", "bestaudio", "-o", "%(id)s.%(ext)s" ], (error, output) => {
+	/*var video = youtube_dl.exec(args[0], [ "--hls-prefer-ffmpeg", "-f", "bestaudio", "-o", "%(id)s.%(ext)s" ], (error, output) => {
 		if (error){
 			console.error("An error occured downloading a song.");
 			console.error(error);
 		} else {
+			this.bot.getBot().stopTyping(message.channel);
 			this.bot.sendMessage(message.channel, {
 				message: "Finished!",
 				mention: message.author
 			});
 		}
+	});*/
+
+	this.bot.sendMessage(message.channel, {
+		message: "Finished!",
+		mention: message.author
 	});
+
+	var stream = ytdl(args[0]);
+
+	stream.on("info", (info, format) => {
+		this.bot.getBot().setPlayingGame(info.title);
+	});
+
+	this.bot.getBot().voiceConnection.playRawStream(stream);
 }
 
 module.exports = Add;
