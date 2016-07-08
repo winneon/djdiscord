@@ -16,6 +16,7 @@ import Ready from "./Listeners/Ready";
 
 // Bot Command Imports
 import Add from "./Commands/Add";
+import Pause from "./Commands/Pause";
 
 require("console-stamp")(console, {
 	pattern: "HH:MM:ss mmm/dd",
@@ -35,6 +36,7 @@ listeners.register(new Message(commands));
 listeners.register(new Ready());
 
 commands.register(new Add());
+commands.register(new Pause());
 
 bot.login(bot.config.token);
 
