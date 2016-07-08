@@ -8,7 +8,7 @@
   },
   "license": "MIT",
   "author": "Jesse Bryan <winneonsword@gmail.com> (http://winneon.moe/)",
-  "main": "common/index",
+  "main": "./entry.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/winneon/djdiscord.git"
@@ -22,5 +22,13 @@
     "console-stamp": "^0.2.2",
     "discord.js": "github:hydrabolt/discord.js#indev",
     "ytdl-core": "^0.7.16"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.9.0",
+    "browserify": "^13.0.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-typescript": "^2.13.6",
+    "gulp-typings": "^2.0.0"
   }
 }
