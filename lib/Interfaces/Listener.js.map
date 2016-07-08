@@ -1,0 +1,1 @@
+{"version":3,"sources":["Interfaces/Listener.ts"],"names":[],"mappings":"AAAA","file":"Interfaces/Listener.js","sourcesContent":["\"use strict\";\n\n// Local TS Imports\nimport Bot from \"../Bot\";\n\ninterface Listener {\n\tonBotEvent(bot: Bot, ...args: any[]): void;\n}\n\nexport default Listener;\n"],"sourceRoot":"/source/"}

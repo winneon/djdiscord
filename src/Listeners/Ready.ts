@@ -11,7 +11,7 @@ import Listener from "../Interfaces/Listener";
 class Ready implements Listener {
 	onBotEvent(bot: Bot): void {
 		bot.authed = true;
-		console.log("Loaded all metadata. Joining voice channel...");
+		console.log("Loaded metadata. Joining voice channel...");
 
 		bot.client.joinVoiceChannel(bot.config.defaultVoiceChannel, (error, connection) => {
 			if (error){
