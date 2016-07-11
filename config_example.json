@@ -1,5 +1,5 @@
 {
 	"command_prefix": "dj!",
-	"default_voice_channel": "VOICE_CHANNEL_ID",
+	"staff_role": "STAFF_ROLE_ID",
 	"token": "BOT_TOKEN"
 }

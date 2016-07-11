@@ -21,8 +21,9 @@
   "dependencies": {
     "console-stamp": "^0.2.2",
     "discord.js": "github:hydrabolt/discord.js#indev",
+    "valid-url": "^1.0.9",
     "vinyl-source-stream": "^1.1.0",
-    "ytdl-core": "^0.7.16"
+    "youtube-dl": "^1.11.1"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.9.0",

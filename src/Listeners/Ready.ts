@@ -10,22 +10,23 @@ import Listener from "../Interfaces/Listener";
 
 class Ready implements Listener {
 	onBotEvent(bot: Bot): void {
-		bot.authed = true;
-		console.log("Loaded metadata. Joining voice channel...");
+		if (bot.config.linked.voice){
+			bot.client.joinVoiceChannel(bot.config.linked.voice, (error, connection) => {
+				if (error){
+					console.error("An error occurred connecting to the default voice channel.");
+					console.error(error);
+				}
+			});
+		}
 
-		bot.client.joinVoiceChannel(bot.config.defaultVoiceChannel, (error, connection) => {
+		bot.client.setPlayingGame(null, (error) => {
 			if (error){
-				console.error("An error occurred connecting to the default voice channel");
+				console.error("An error occurred resetting the song status.");
 				console.error(error);
-			} else {
-				console.log("Joined. Resetting the status message...");
-
-				bot.client.setPlayingGame(undefined, (error) => {
-					bot.ready = true;
-					console.log("Ready and listening for commands.");
-				});
 			}
 		});
+
+		console.log("Ready and listening for commands.");
 	}
 }
 

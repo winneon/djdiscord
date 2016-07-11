@@ -11,16 +11,12 @@ let fs: any = require("fs");
 import Config from "./Config";
 
 class Bot {
-	authed: boolean;
-	ready: boolean;
 	config: Config;
 	discord: any;
 
 	client: any;
 
 	constructor(){
-		this.authed = false;
-		this.ready = false;
 		this.config = new Config();
 		this.discord = discord;
 
@@ -40,7 +36,6 @@ class Bot {
 
 				process.exit(1);
 			} else {
-				this.authed = true;
 				console.log("Successfully logged in.");
 			}
 		});

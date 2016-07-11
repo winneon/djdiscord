@@ -4,20 +4,20 @@
 import Bot from "../Bot";
 import Command from "../Interfaces/Command";
 
-class Pause implements Command {
+class Resume implements Command {
 	usage: string = "%cmd%";
-	description: string = "Pause the currently playing song."
+	description: string = "Resume the currently playing song."
 	args: number = 0;
 	staff: boolean = true;
 
 	onCommand(bot: Bot, message: any, args: string[]): void {
 		let voice = bot.client.voiceConnection;
 
-		if (voice.playing && !voice.paused){
-			voice.pause();
+		if (voice.paused){
+			voice.resume();
 
 			bot.sendMessage(message.channel, {
-				message: ":pause_button:"
+				message: ":arrow_forward:"
 			});
 		} else {
 			bot.sendMessage(message.channel, {
@@ -27,4 +27,4 @@ class Pause implements Command {
 	}
 }
 
-export default Pause;
+export default Resume;
