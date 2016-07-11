@@ -36,7 +36,7 @@ class Add implements Command {
 				}
 			} else {
 				bot.sendMessage(message.channel, {
-					message: "Enqueued `" + request.title + " [" + request.durationAsString + "]` at position `" + position + "`."
+					message: "Enqueued `" + (request.shortTitle ? request.shortTitle : request.title) + " [" + request.durationAsString + "]` at position `" + position + "`."
 				});
 			}
 		});

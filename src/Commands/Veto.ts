@@ -18,6 +18,8 @@ class Veto implements Command {
 	}
 
 	onCommand(bot: Bot, message: any, args: string[]): void {
+		let voice: any = bot.client.voiceConnection;
+
 		this.queue.remRequest(0, (error, request) => {
 			bot.sendMessage(message.channel, {
 				message: error ? "There isn't anything currently playing." : "Vetoed `" + request.title + "`."

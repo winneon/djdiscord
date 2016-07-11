@@ -41,7 +41,7 @@ class Bot {
 		});
 	}
 
-	sendMessage(channel: any, content: { message: string, mention?: any; options?: any }, callback?: () => void): void {
+	sendMessage(channel: any, content: { message: string, mention?: any; options?: any }, callback?: (message: any) => void): void {
 		if (content.mention){
 			if (typeof content.mention === "string"){
 				content.mention = this.client.users.get("id", content.mention);
@@ -53,12 +53,12 @@ class Bot {
 		}
 
 		this.client.stopTyping(channel);
-		this.client.sendMessage(channel, content.message, content.options, function(error){
+		this.client.sendMessage(channel, content.message, content.options, function(error, message){
 			if (error){
 				console.error("An error occurred sending a message.");
 				console.error(error);
 			} else if (callback){
-				callback();
+				callback(message);
 			}
 		});
 	}

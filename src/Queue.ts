@@ -10,14 +10,16 @@ import Request from "./Request";
 class Queue {
 	bot: Bot;
 	list: Request[];
-	started: boolean;
 	isPlaying: boolean;
+	started: boolean;
+	veto: boolean;
 
 	constructor(bot: Bot){
 		this.bot = bot;
 		this.list = [ ];
-		this.started = false;
 		this.isPlaying = false;
+		this.started = false;
+		this.veto = false;
 	}
 
 	get currentlyPlaying(){
@@ -55,13 +57,29 @@ class Queue {
 					title: info.fulltitle,
 					link: url ? link : "https://www.youtube.com/watch?v=" + info.id,
 					requester: user.id ? user.id : user,
-					duration: sec
+					duration: sec,
+					shortTitle: info.title
 				});
 
-				this.list.push(request);
+				if (this.list.length > 1 && this.list[this.list.length - 1].requester !== request.requester){
+					let i: number = this.list.length - 1;
+
+					while (true){
+						if (this.list[i - 1] && this.list[i].requester === this.list[i - 1].requester){
+							i--;
+							continue;
+						} else {
+							this.list.splice(i + 1, 0, request);
+							break;
+						}
+					}
+				} else {
+					this.list.push(request);
+				}
+
 				this._checkQueue();
 
-				if (callback) callback(undefined, request, this.list.length);
+				if (callback) callback(undefined, request, this.list.indexOf(request) + 1);
 			}
 		});
 	}
@@ -72,7 +90,9 @@ class Queue {
 			let cont: boolean = false;
 			let request: Request = this.list[position];
 
-			if (position === 0 && this.started){
+			//console.log(this.list);
+
+			if (position === 0 && this.isPlaying){
 				this.bot.client.setPlayingGame(null, (error) => {
 					if (error){
 						console.error("An error occurred resetting the song status on remove.");
@@ -80,10 +100,11 @@ class Queue {
 					}
 				});
 
+				this.veto = true;
 				voice.stopPlaying();
 
-				this.started = false;
 				this.isPlaying = false;
+				this.started = false;
 
 				cont = true;
 			}
@@ -101,22 +122,31 @@ class Queue {
 	}
 
 	_checkQueue(): void {
-		if (!this.isPlaying && !this.bot.client.voiceConnection.playing && this.list.length > 0){
+		if (!this.started && !this.bot.client.voiceConnection.playing && this.list.length > 0){
 			this._queryQueue(this.currentlyPlaying);
 		}
 	}
 
 	_queryQueue(request: any): void {
-		console.log(this.list[0]);
+		this.started = true;
 
-		this.isPlaying = true;
+		let loadMessage: any = undefined;
 		let stream: any = ytdl(request.link, [ "--format=bestaudio[abr<=192]/best" ]);
 
 		stream.on("info", (info, format) => {
 			this.bot.client.setPlayingGame(info.title);
 
+			if (loadMessage){
+				this.bot.client.deleteMessage(loadMessage, (error) => {
+					if (error){
+						console.error("An error occurred deleting the loading message.")
+						console.error(error);
+					}
+				});
+			}
+
 			this.bot.sendMessage(this.bot.config.linked.text, {
-				message: "Now playing `" + request.title + "`."
+				message: "Now Playing: `" + request.title + "`."
 			});
 		});
 
@@ -128,17 +158,25 @@ class Queue {
 			this.remRequest(0);
 		});
 
-		this.bot.client.startTyping(this.bot.config.linked.text);
+		this.bot.sendMessage(this.bot.config.linked.text, {
+			message: "Loading: `" + request.title + "`..."
+		}, (message) => {
+			loadMessage = message;
+		});
 
 		this.bot.client.voiceConnection.playRawStream(stream, (error, intent) => {
 			if (error){
 				console.error("An error occurred playing a stream.")
 				console.error(error);
 			} else {
-				this.started = true;
+				this.isPlaying = true;
 
 				intent.on("end", () => {
-					this.remRequest(0);
+					if (this.veto){
+						this.veto = false;
+					} else {
+						this.remRequest(0);
+					}
 				});
 			}
 		});

@@ -15,8 +15,8 @@ class Message implements Listener {
 	onBotEvent(bot: Bot, message: any): void {
 		let text: string = message.content;
 
-		if (bot.config.linked.text && message.channel.id === bot.config.linked.text){
-			if (text.toLowerCase().startsWith(bot.config.commandPrefix)){
+		if (text.toLowerCase().startsWith(bot.config.commandPrefix)){
+			if (bot.config.linked.text && message.channel.id === bot.config.linked.text){
 				let command: string = text.split(" ")[0].replace(bot.config.commandPrefix, "").toLowerCase();
 				let args: string[] = text.split(" ");
 
@@ -43,6 +43,10 @@ class Message implements Listener {
 						});
 					}
 				}
+			} else if (bot.config.linked.text){
+				bot.sendMessage(message.channel, {
+					message: "Please refer your music requests to <#" + bot.config.linked.text + ">."
+				});
 			}
 		}
 

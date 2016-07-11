@@ -6,11 +6,15 @@ class Request {
 	requester: string;
 	duration: number;
 
-	constructor(options: { title: string, link: string, requester: string, duration: number }){
+	shortTitle: string;
+
+	constructor(options: { title: string, link: string, requester: string, duration: number, shortTitle?: string }){
 		this.title = options.title;
 		this.link = options.link;
 		this.requester = options.requester;
 		this.duration = options.duration;
+
+		if (options.shortTitle) this.shortTitle = options.shortTitle;
 	}
 
 	get durationAsString(){
