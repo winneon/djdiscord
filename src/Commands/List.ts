@@ -25,7 +25,7 @@ class List implements Command {
 			header = "There isn't anything in the queue.";
 		} else {
 			if (this.queue.isPlaying){
-				header += "Now Playing: `" + this.queue.list[0].title + "`.\n\n";
+				header += this.queue.currentlyPlaying + "\n\n";
 			}
 
 			for (let request of this.queue.list){

@@ -17,6 +17,7 @@ import Ready from "./Listeners/Ready";
 
 // Bot Command Imports
 import List from "./Commands/List";
+import Playing from "./Commands/Playing";
 import Add from "./Commands/Add";
 import Pause from "./Commands/Pause";
 import Resume from "./Commands/Resume";
@@ -41,6 +42,7 @@ listeners.register(new Message(commands));
 listeners.register(new Ready());
 
 commands.register(new List(queue));
+commands.register(new Playing(queue));
 commands.register(new Add(queue));
 commands.register(new Pause());
 commands.register(new Resume());

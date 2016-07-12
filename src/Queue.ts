@@ -6,6 +6,7 @@ let ytdl: any = require("youtube-dl");
 // Local TS Imports
 import Bot from "./Bot";
 import Request from "./Request";
+import Utils from "./Utils";
 
 class Queue {
 	bot: Bot;
@@ -23,7 +24,7 @@ class Queue {
 	}
 
 	get currentlyPlaying(){
-		return this.list.length > 0 ? this.list[0] : undefined;
+		return "Now Playing: `" + (this.list[0].shortTitle ? this.list[0].shortTitle : this.list[0].title) + " [" + new Utils().secondsAsString(parseInt((this.bot.client.voiceConnection.streamTime / 1000).toString())) + "/" + this.list[0].durationAsString + "]`.";
 	}
 
 	addRequest(link: string, user: any, callback?: (error: any, request: any, position: any) => void): void {
@@ -77,9 +78,11 @@ class Queue {
 					this.list.push(request);
 				}
 
-				this._checkQueue();
-
 				if (callback) callback(undefined, request, this.list.indexOf(request) + 1);
+
+				setTimeout(() => {
+					this._checkQueue();
+				}, 1000);
 			}
 		});
 	}
@@ -110,12 +113,13 @@ class Queue {
 			}
 
 			this.list.splice(position, 1);
-
-			if (cont){
-				this._checkQueue();
-			}
-
 			if (callback) callback(undefined, request);
+
+			setTimeout(() => {
+				if (cont){
+					this._checkQueue();
+				}
+			}, 1000);
 		} else {
 			if (callback) callback("nothing playing", undefined);
 		}
@@ -123,7 +127,7 @@ class Queue {
 
 	_checkQueue(): void {
 		if (!this.started && !this.bot.client.voiceConnection.playing && this.list.length > 0){
-			this._queryQueue(this.currentlyPlaying);
+			this._queryQueue(this.list[0]);
 		}
 	}
 
@@ -134,8 +138,6 @@ class Queue {
 		let stream: any = ytdl(request.link, [ "--format=bestaudio[abr<=192]/best" ]);
 
 		stream.on("info", (info, format) => {
-			this.bot.client.setPlayingGame(info.title);
-
 			if (loadMessage){
 				this.bot.client.deleteMessage(loadMessage, (error) => {
 					if (error){
@@ -148,6 +150,8 @@ class Queue {
 			this.bot.sendMessage(this.bot.config.linked.text, {
 				message: "Now Playing: `" + request.title + "`."
 			});
+
+			this.bot.client.setPlayingGame(info.title);
 		});
 
 		stream.on("error", (error) => {

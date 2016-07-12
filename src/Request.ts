@@ -1,5 +1,8 @@
 "use strict";
 
+// Local TS Imports
+import Utils from "./Utils";
+
 class Request {
 	title: string;
 	link: string;
@@ -19,7 +22,7 @@ class Request {
 
 	get durationAsString(){
 		// Credit to http://stackoverflow.com/questions/1322732/convert-seconds-to-hh-mm-ss-with-javascript#comment57297644_25279340.
-		return new Date(this.duration * 1000).toISOString().substr(11, 8);
+		return new Utils().secondsAsString(this.duration);
 	}
 }
 

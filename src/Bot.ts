@@ -62,10 +62,6 @@ class Bot {
 			}
 		});
 	}
-
-	stripID(id: string): string {
-		return id.replace(/\D/g, "");
-	}
 }
 
 export default Bot;
