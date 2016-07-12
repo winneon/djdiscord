@@ -14,6 +14,7 @@ import Queue from "./Queue";
 // Bot Listener Imports
 import Message from "./Listeners/Message";
 import Ready from "./Listeners/Ready";
+import VoiceSpeaking from "./Listeners/VoiceSpeaking";
 
 // Bot Command Imports
 import List from "./Commands/List";
@@ -40,6 +41,7 @@ let queue: Queue = new Queue(bot);
 
 listeners.register(new Message(commands));
 listeners.register(new Ready());
+listeners.register(new VoiceSpeaking());
 
 commands.register(new List(queue));
 commands.register(new Playing(queue));

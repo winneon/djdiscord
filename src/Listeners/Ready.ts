@@ -5,7 +5,6 @@ let fs: any = require("fs");
 
 // Local TS Imports
 import Bot from "../Bot";
-import Commands from "../Commands";
 import Listener from "../Interfaces/Listener";
 
 class Ready implements Listener {
