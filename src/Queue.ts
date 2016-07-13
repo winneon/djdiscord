@@ -47,6 +47,8 @@ class Queue {
 					} else {
 						reject(error);
 					}
+				} else if (info.playlist){
+					reject(new Error("Playlists are not currently supported due to how process-intensive they are."));
 				} else {
 					// Credit to http://stackoverflow.com/a/9640417.
 					let split: string[] = info.duration.split(":");
