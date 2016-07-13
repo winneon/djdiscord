@@ -29,8 +29,10 @@ class Add implements Command {
 				Logger.announce(bot, "Added song `" + (data.request.shortTitle ? data.request.shortTitle : data.request.title) + " [" + data.request.durationAsString + "]`, position `" + data.position + "`.");
 			})
 			.catch((error) => {
-				if (error.message === "Invalid URL!"){
+				if (error.message === "Invalid URL."){
 					Logger.error(bot, "Invalid URL. Supported sites: https://rg3.github.io/youtube-dl/supportedsites.html");
+				} else if (error.message === "Playlists not supported"){
+					Logger.error(bot, "Playlists are not currently supported due to how process-intensive they are.");
 				} else {
 					Logger.error(bot, "Unknown Error:\n\n```" + error.message + "```", error);
 				}

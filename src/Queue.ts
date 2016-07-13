@@ -43,12 +43,12 @@ class Queue {
 			ytdl.getInfo(link, (error, info) => {
 				if (error){
 					if (error.message.indexOf("ERROR: Unsupported URL") > -1){
-						reject(new Error("Invalid URL!"));
+						reject(new Error("Invalid URL."));
 					} else {
 						reject(error);
 					}
 				} else if (info.playlist){
-					reject(new Error("Playlists are not currently supported due to how process-intensive they are."));
+					reject(new Error("Playlists not supported."));
 				} else {
 					// Credit to http://stackoverflow.com/a/9640417.
 					let split: string[] = info.duration.split(":");
