@@ -47,7 +47,7 @@ class Queue {
 					} else {
 						reject(error);
 					}
-				} else if (info.playlist){
+				} else if (info instanceof Array){
 					reject(new Error("Playlists not supported."));
 				} else {
 					// Credit to http://stackoverflow.com/a/9640417.

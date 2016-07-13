@@ -31,7 +31,7 @@ class Add implements Command {
 			.catch((error) => {
 				if (error.message === "Invalid URL."){
 					Logger.error(bot, "Invalid URL. Supported sites: https://rg3.github.io/youtube-dl/supportedsites.html");
-				} else if (error.message === "Playlists not supported"){
+				} else if (error.message === "Playlists not supported."){
 					Logger.error(bot, "Playlists are not currently supported due to how process-intensive they are.");
 				} else {
 					Logger.error(bot, "Unknown Error:\n\n```" + error.message + "```", error);
