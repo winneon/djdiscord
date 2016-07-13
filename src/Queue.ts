@@ -161,7 +161,7 @@ class Queue {
 		});
 
 		stream.on("error", (error) => {
-			Logger.error(this.bot, "Unknown:\n\n```" + error.message + "```", error);
+			Logger.error(this.bot, "Unknown Error:\n\n```" + error.message + "```", error);
 			this.remRequest(0);
 		});
 
@@ -171,6 +171,7 @@ class Queue {
 		this.bot.client.voiceConnection.playRawStream(stream)
 			.then((intent) => {
 				this.isPlaying = true;
+				intent.on("error", error => console.error(error));
 
 				intent.on("end", () => {
 					if (this.veto){
