@@ -15,6 +15,7 @@ gulp.task("compile", () => {
 		module: "commonjs",
 		moduleResolution: "node",
 		noResolve: true,
+		noEmitOnError: true,
 		noExternalResolve: true,
 		target: "es6"
 	})).pipe(babel()).pipe(sourcemaps.write(".")).pipe(gulp.dest("lib"));

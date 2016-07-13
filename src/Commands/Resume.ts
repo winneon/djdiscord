@@ -2,6 +2,7 @@
 
 // Local TS Imports
 import Bot from "../Bot";
+import Logger from "../Logger";
 import Command from "../Interfaces/Command";
 
 class Resume implements Command {
@@ -15,14 +16,9 @@ class Resume implements Command {
 
 		if (voice.paused){
 			voice.resume();
-
-			bot.sendMessage(message.channel, {
-				message: ":arrow_forward:"
-			});
+			Logger.bare(bot, ":arrow_forward:")
 		} else {
-			bot.sendMessage(message.channel, {
-				message: "There isn't anything currently playing."
-			});
+			Logger.error(bot, "There is nothing playing.");
 		}
 	}
 }

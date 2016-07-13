@@ -5,10 +5,11 @@ let path: any = require("path");
 let fs: any = require("fs");
 
 // Local TS Imports
-import Config from "./Config";
 import Bot from "./Bot";
-import Listeners from "./Listeners";
 import Commands from "./Commands";
+import Config from "./Config";
+import Logger from "./Logger";
+import Listeners from "./Listeners";
 import Queue from "./Queue";
 
 // Bot Listener Imports
@@ -17,10 +18,10 @@ import Ready from "./Listeners/Ready";
 import VoiceSpeaking from "./Listeners/VoiceSpeaking";
 
 // Bot Command Imports
-import List from "./Commands/List";
-import Playing from "./Commands/Playing";
 import Add from "./Commands/Add";
+import List from "./Commands/List";
 import Pause from "./Commands/Pause";
+import Playing from "./Commands/Playing";
 import Resume from "./Commands/Resume";
 import Veto from "./Commands/Veto";
 
@@ -54,8 +55,14 @@ bot.login(bot.config.token);
 
 process.stdin.resume();
 process.on("SIGINT", () => {
-	console.log("Terminating...");
-	bot.client.logout();
+	function logout(){
+		bot.client.logout();
+		process.exit(0);
+	}
 
-	process.exit();
+	console.log("Terminating...");
+
+	Logger.message(bot, "Terminating...")
+		.then(message => logout())
+		.catch(error => logout());
 });

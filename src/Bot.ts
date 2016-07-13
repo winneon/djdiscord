@@ -29,38 +29,12 @@ class Bot {
 	login(token: string): void {
 		console.log("Attempting to login...");
 
-		this.client.loginWithToken(token, (error, token) => {
-			if (error){
-				console.error("An error occurred logging in to the bot.");
+		this.client.loginWithToken(token)
+			.then(token => console.log("Successfully logged in."))
+			.catch((error) => {
 				console.error(error);
-
 				process.exit(1);
-			} else {
-				console.log("Successfully logged in.");
-			}
-		});
-	}
-
-	sendMessage(channel: any, content: { message: string, mention?: any; options?: any }, callback?: (message: any) => void): void {
-		if (content.mention){
-			if (typeof content.mention === "string"){
-				content.mention = this.client.users.get("id", content.mention);
-			}
-
-			if (typeof content.mention === "object"){
-				content.message = content.mention.mention() + " " + content.message;
-			}
-		}
-
-		this.client.stopTyping(channel);
-		this.client.sendMessage(channel, content.message, content.options, function(error, message){
-			if (error){
-				console.error("An error occurred sending a message.");
-				console.error(error);
-			} else if (callback){
-				callback(message);
-			}
-		});
+			});
 	}
 }
 

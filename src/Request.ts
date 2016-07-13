@@ -22,7 +22,7 @@ class Request {
 
 	get durationAsString(){
 		// Credit to http://stackoverflow.com/questions/1322732/convert-seconds-to-hh-mm-ss-with-javascript#comment57297644_25279340.
-		return new Utils().secondsAsString(this.duration);
+		return Utils.secondsAsString(this.duration);
 	}
 }
 

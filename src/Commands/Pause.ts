@@ -2,6 +2,7 @@
 
 // Local TS Imports
 import Bot from "../Bot";
+import Logger from "../Logger";
 import Command from "../Interfaces/Command";
 
 class Pause implements Command {
@@ -15,14 +16,9 @@ class Pause implements Command {
 
 		if (voice.playing && !voice.paused){
 			voice.pause();
-
-			bot.sendMessage(message.channel, {
-				message: ":pause_button:"
-			});
+			Logger.bare(bot, ":pause_button:");
 		} else {
-			bot.sendMessage(message.channel, {
-				message: "There isn't anything currently playing."
-			});
+			Logger.error(bot, "There is nothing playing.");
 		}
 	}
 }

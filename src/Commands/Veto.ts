@@ -2,6 +2,7 @@
 
 // Local TS Imports
 import Bot from "../Bot";
+import Logger from "../Logger";
 import Queue from "../Queue";
 import Command from "../Interfaces/Command";
 
@@ -20,11 +21,9 @@ class Veto implements Command {
 	onCommand(bot: Bot, message: any, args: string[]): void {
 		let voice: any = bot.client.voiceConnection;
 
-		this.queue.remRequest(0, (error, request) => {
-			bot.sendMessage(message.channel, {
-				message: error ? "There isn't anything currently playing." : "Vetoed `" + request.title + "`."
-			});
-		});
+		this.queue.remRequest(0)
+			.then(request => Logger.message(bot, "Vetoed `" + request.title + "`."))
+			.catch(error => Logger.error(bot, error.message));
 	}
 }
 

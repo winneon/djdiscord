@@ -5,6 +5,7 @@ let ytdl: any = require("youtube-dl");
 
 // Local TS Imports
 import Bot from "./Bot";
+import Logger from "./Logger";
 import Request from "./Request";
 import Utils from "./Utils";
 
@@ -24,10 +25,10 @@ class Queue {
 	}
 
 	get currentlyPlaying(){
-		return "Now Playing: `" + (this.list[0].shortTitle ? this.list[0].shortTitle : this.list[0].title) + " [" + new Utils().secondsAsString(parseInt((this.bot.client.voiceConnection.streamTime / 1000).toString())) + "/" + this.list[0].durationAsString + "]`.";
+		return this.list.length > 0 ? ("Now Playing: `" + (this.list[0].shortTitle ? this.list[0].shortTitle : this.list[0].title) + " [" + Utils.secondsAsString(parseInt((this.bot.client.voiceConnection.streamTime / 1000).toString())) + "/" + this.list[0].durationAsString + "]`.") : "There is nothing playing.";
 	}
 
-	addRequest(link: string, user: any, callback?: (error: any, request: any, position: any) => void): void {
+	addRequest(link: string, user: any): Promise<any> {
 		let url: boolean = false;
 
 		if (require("valid-url").isUri(link)){
@@ -36,58 +37,65 @@ class Queue {
 			link = "gvsearch1:" + link;
 		}
 
-		ytdl.getInfo(link, (error, info) => {
-			if (error){
-				if (error.message.indexOf("ERROR: Unsupported URL") > -1){
-					if (callback) callback("invalid", undefined, undefined);
-				} else {
-					if (callback) callback(error.message, undefined, undefined);
-				}
-			} else {
-				// Credit to http://stackoverflow.com/a/9640417.
-				let split: string[] = info.duration.split(":");
-				let sec: number = 0;
-				let min: number = 1;
+		let that: Queue = this;
 
-				while (split.length > 0){
-					sec += min * parseInt(split.pop(), 10);
-					min *= 60;
-				}
-
-				let request: Request = new Request({
-					title: info.fulltitle,
-					link: url ? link : "https://www.youtube.com/watch?v=" + info.id,
-					requester: user.id ? user.id : user,
-					duration: sec,
-					shortTitle: info.title
-				});
-
-				if (this.list.length > 1 && this.list[this.list.length - 1].requester !== request.requester){
-					let i: number = this.list.length - 1;
-
-					while (true){
-						if (this.list[i - 1] && this.list[i].requester === this.list[i - 1].requester){
-							i--;
-							continue;
-						} else {
-							this.list.splice(i + 1, 0, request);
-							break;
-						}
+		return new Promise<any>((resolve, reject) => {
+			ytdl.getInfo(link, (error, info) => {
+				if (error){
+					if (error.message.indexOf("ERROR: Unsupported URL") > -1){
+						reject(new Error("Invalid URL!"));
+					} else {
+						reject(error);
 					}
 				} else {
-					this.list.push(request);
+					// Credit to http://stackoverflow.com/a/9640417.
+					let split: string[] = info.duration.split(":");
+					let sec: number = 0;
+					let min: number = 1;
+
+					while (split.length > 0){
+						sec += min * parseInt(split.pop(), 10);
+						min *= 60;
+					}
+
+					let request: Request = new Request({
+						title: info.fulltitle,
+						link: url ? link : "https://www.youtube.com/watch?v=" + info.id,
+						requester: user.id ? user.id : user,
+						duration: sec,
+						shortTitle: info.title
+					});
+
+					if (that.list.length > 1 && that.list[that.list.length - 1].requester !== request.requester){
+						let i: number = that.list.length - 1;
+
+						while (true){
+							if (that.list[i - 1] && that.list[i].requester === that.list[i - 1].requester){
+								i--;
+								continue;
+							} else {
+								that.list.splice(i + 1, 0, request);
+								break;
+							}
+						}
+					} else {
+						that.list.push(request);
+					}
+
+					resolve({
+						request: request,
+						position: that.list.indexOf(request) + 1
+					});
+
+					setTimeout(() => {
+						that._checkQueue();
+					}, 1000);
 				}
-
-				if (callback) callback(undefined, request, this.list.indexOf(request) + 1);
-
-				setTimeout(() => {
-					this._checkQueue();
-				}, 1000);
-			}
+			});
 		});
 	}
 
-	remRequest(position, callback?: (error: any, request: Request) => void): void {
+	remRequest(position): Promise<any> {
 		if (this.list.length >= position + 1){
 			let voice: any = this.bot.client.voiceConnection;
 			let cont: boolean = false;
@@ -96,12 +104,8 @@ class Queue {
 			//console.log(this.list);
 
 			if (position === 0 && this.isPlaying){
-				this.bot.client.setPlayingGame(null, (error) => {
-					if (error){
-						console.error("An error occurred resetting the song status on remove.");
-						console.error(error);
-					}
-				});
+				this.bot.client.setPlayingGame(null)
+					.catch(error => console.error(error));
 
 				this.veto = true;
 				voice.stopPlaying();
@@ -110,18 +114,25 @@ class Queue {
 				this.started = false;
 
 				cont = true;
+
+				setTimeout(() => {
+					if (this.veto){
+						this.veto = false;
+					}
+				}, 5000);
 			}
 
 			this.list.splice(position, 1);
-			if (callback) callback(undefined, request);
 
 			setTimeout(() => {
 				if (cont){
 					this._checkQueue();
 				}
 			}, 1000);
+
+			return Promise.resolve(request);
 		} else {
-			if (callback) callback("nothing playing", undefined);
+			return Promise.reject(new Error("There is nothing playing."));
 		}
 	}
 
@@ -139,40 +150,26 @@ class Queue {
 
 		stream.on("info", (info, format) => {
 			if (loadMessage){
-				this.bot.client.deleteMessage(loadMessage, (error) => {
-					if (error){
-						console.error("An error occurred deleting the loading message.")
-						console.error(error);
-					}
-				});
+				this.bot.client.deleteMessage(loadMessage)
+					.catch(error => console.error(error));
 			}
 
-			this.bot.sendMessage(this.bot.config.linked.text, {
-				message: "Now Playing: `" + request.title + "`."
-			});
+			Logger.announce(this.bot, "Now Playing: `" + request.title + "`.");
 
-			this.bot.client.setPlayingGame(info.title);
+			this.bot.client.setPlayingGame(info.title)
+				.catch(error => console.error(error));
 		});
 
 		stream.on("error", (error) => {
-			this.bot.sendMessage(this.bot.config.linked.text, {
-				message: "```\n" + error.message + "\n```"
-			});
-
+			Logger.error(this.bot, "Unknown:\n\n```" + error.message + "```", error);
 			this.remRequest(0);
 		});
 
-		this.bot.sendMessage(this.bot.config.linked.text, {
-			message: "Loading: `" + request.title + "`..."
-		}, (message) => {
-			loadMessage = message;
-		});
+		Logger.announce(this.bot, "Loading: `" + request.title + "`...")
+			.then(message => loadMessage = message);
 
-		this.bot.client.voiceConnection.playRawStream(stream, (error, intent) => {
-			if (error){
-				console.error("An error occurred playing a stream.")
-				console.error(error);
-			} else {
+		this.bot.client.voiceConnection.playRawStream(stream)
+			.then((intent) => {
 				this.isPlaying = true;
 
 				intent.on("end", () => {
@@ -182,8 +179,8 @@ class Queue {
 						this.remRequest(0);
 					}
 				});
-			}
-		});
+			})
+			.catch(error => console.error(error));
 	}
 }
 

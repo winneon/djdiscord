@@ -2,6 +2,7 @@
 
 // Local TS Imports
 import Bot from "../Bot";
+import Logger from "../Logger";
 import Queue from "../Queue";
 import Command from "../Interfaces/Command";
 
@@ -18,9 +19,11 @@ class Playing implements Command {
 	}
 
 	onCommand(bot: Bot, message: any, args: string[]): void {
-		bot.sendMessage(message.channel, {
-			message: this.queue.isPlaying ? this.queue.currentlyPlaying : "There isn't anything currently playing."
-		});
+		if (this.queue.list.length > 0){
+			Logger.announce(bot, this.queue.currentlyPlaying);
+		} else {
+			Logger.error(bot, this.queue.currentlyPlaying);
+		}
 	}
 }
 
