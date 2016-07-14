@@ -22,6 +22,7 @@ import VoiceSpeaking from "./Listeners/VoiceSpeaking";
 
 // Bot Command Imports
 import Add from "./Commands/Add";
+import Drop from "./Commands/Drop";
 import List from "./Commands/List";
 import Pause from "./Commands/Pause";
 import Playing from "./Commands/Playing";
@@ -50,6 +51,7 @@ listeners.register(new VoiceSpeaking());
 commands.register(new List(queue));
 commands.register(new Playing(queue));
 commands.register(new Add(queue));
+commands.register(new Drop(queue));
 commands.register(new Pause());
 commands.register(new Resume());
 commands.register(new Veto(queue));

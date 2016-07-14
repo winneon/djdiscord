@@ -28,6 +28,31 @@ class Queue {
 		return this.list.length > 0 ? ("Now Playing: `" + (this.list[0].shortTitle ? this.list[0].shortTitle : this.list[0].title) + " [" + Utils.secondsAsString(parseInt((this.bot.client.voiceConnection.streamTime / 1000).toString())) + "/" + this.list[0].durationAsString + "]`.") : "There is nothing playing.";
 	}
 
+	getRequest(position: number, user: any): Request {
+		let id: any = user.id ? user.id : user;
+
+		if (typeof id === "string" && this.list[position] && this.list[position].requester === id){
+			return this.list[position];
+		} else {
+			return undefined;
+		}
+	}
+
+	getRequests(user: any): Request[] {
+		let id: any = user.id ? user.id : user;
+		let requests: Request[] = [ ];
+
+		if (typeof id === "string"){
+			for (let request of this.list){
+				if (request.requester === id){
+					requests.push(request);
+				}
+			}
+		}
+
+		return requests;
+	}
+
 	addRequest(link: string, user: any): Promise<any> {
 		let url: boolean = false;
 
@@ -97,13 +122,86 @@ class Queue {
 		});
 	}
 
-	remRequest(position): Promise<any> {
-		if (this.list.length >= position + 1){
-			let voice: any = this.bot.client.voiceConnection;
-			let cont: boolean = false;
-			let request: Request = this.list[position];
+	remRequest(position: number): Promise<any> {
+		setTimeout(() => {
+			this._checkQueue();
+		}, 1000);
 
-			//console.log(this.list);
+		return this._remRequestCallback(position);
+	}
+
+	remRequests(either: any): Promise<any> {
+		if (either instanceof Array){
+			if (either.some(Number.isNaN) || either.some(obj => obj < 0)){
+				return Promise.reject(new Error("The provided array must only contain Number objects above -1."));
+			} else {
+				let error: number = -1;
+
+				for (let position of either){
+					if (!this.list[position]){
+						error = position;
+						break;
+					}
+				}
+
+				if (error > -1){
+					return Promise.reject(new Error("Position " + error + " is not in the queue."));
+				} else {
+					let requests: Request[] = [ ];
+
+					for (let position of either){
+						this._remRequestCallback(position).then(request => requests.push(request));
+					}
+
+					setTimeout(() => {
+						this._checkQueue();
+					}, 1000);
+
+					return Promise.resolve(requests);
+				}
+			}
+		} else {
+			let id: any = either.id ? either.id : either;
+
+			if (typeof id === "string"){
+				let requests: Request[] = this.getRequests(id);
+
+				if (requests.length > 0){
+					let that: Queue = this;
+					let count: number = 0;
+
+					return new Promise<any>((resolve, reject) => {
+						function run(position){
+							that._remRequestCallback(position)
+								.then((request) => {
+									if (count === requests.length - 1){
+										setTimeout(() => {
+											that._checkQueue();
+										}, 1000);
+
+										resolve(requests);
+									} else {
+										run(that.list.indexOf(requests[count++]));
+									}
+								})
+								.catch(error => reject(error));
+						}
+
+						run(that.list.indexOf(requests[count]));
+					});
+				} else {
+					return Promise.reject(new Error("That user has no requests in the queue."));
+				}
+			} else {
+				return Promise.reject(new Error("The provided argument can only be Array, String, or User."));
+			}
+		}
+	}
+
+	_remRequestCallback(position: number): Promise<any> {
+		if (this.list.length > position){
+			let voice: any = this.bot.client.voiceConnection;
+			let request: Request = this.list[position];
 
 			if (position === 0 && this.isPlaying){
 				this.bot.client.setPlayingGame(null)
@@ -115,8 +213,6 @@ class Queue {
 				this.isPlaying = false;
 				this.started = false;
 
-				cont = true;
-
 				setTimeout(() => {
 					if (this.veto){
 						this.veto = false;
@@ -124,17 +220,14 @@ class Queue {
 				}, 5000);
 			}
 
-			this.list.splice(position, 1);
-
-			setTimeout(() => {
-				if (cont){
-					this._checkQueue();
-				}
-			}, 1000);
-
-			return Promise.resolve(request);
+			if (this.started && !this.isPlaying){
+				return Promise.reject(new Error("The currently loading song isn't playing yet."));
+			} else {
+				this.list.splice(position, 1);
+				return Promise.resolve(request);
+			}
 		} else {
-			return Promise.reject(new Error("There is nothing playing."));
+			return Promise.reject(new Error("The queue is empty."));
 		}
 	}
 

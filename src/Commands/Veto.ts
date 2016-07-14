@@ -19,8 +19,6 @@ class Veto implements Command {
 	}
 
 	onCommand(bot: Bot, message: any, args: string[]): void {
-		let voice: any = bot.client.voiceConnection;
-
 		this.queue.remRequest(0)
 			.then(request => Logger.message(bot, "Vetoed `" + request.title + "`."))
 			.catch(error => Logger.error(bot, error.message));
