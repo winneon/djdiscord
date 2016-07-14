@@ -1,1 +1,1 @@
-{"version":3,"sources":["Interfaces/Command.ts"],"names":[],"mappings":"AAAA","file":"Interfaces/Command.js","sourcesContent":["\"use strict\";\n\n// Local TS Imports\nimport Bot from \"../Bot\";\n\ninterface Command {\n\tusage: string;\n\tdescription: string;\n\targs: number;\n\tstaff: boolean;\n\n\tonCommand(bot: Bot, message: any, args: string[]): void;\n}\n\nexport default Command;\n"],"sourceRoot":"/source/"}
+{"version":3,"sources":["../../src/Interfaces/Command.ts"],"names":[],"mappings":"AAAA","file":"Interfaces/Command.js","sourceRoot":"."}

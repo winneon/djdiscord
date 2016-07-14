@@ -1,5 +1,8 @@
 "use strict";
 
+// Source Map Redirection
+require("source-map-support").install();
+
 // Native Node Imports
 let path: any = require("path");
 let fs: any = require("fs");
