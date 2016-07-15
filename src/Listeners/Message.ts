@@ -54,12 +54,12 @@ class Message implements Listener {
 					}
 				}
 			} else if (bot.config.linked.text){
-				Logger.error(bot, "Please refer your music requests to <#" + bot.config.linked.text + ">.");
+				//Logger.error(bot, "Please refer your music requests to <#" + bot.config.linked.text + ">.");
 			}
 		}
 
 		if (text.toLowerCase() === bot.client.user.mention() + " are you my waifu" && message.author.id === "87353905251377152"){
-			Logger.bare(bot, "Yes, my love.", message.channel);
+			Logger.bare(bot, "Yes, my love. :heartpulse:", message.channel);
 		}
 
 		if (bot.client.userHasRole(message.author, bot.config.staffRole)){

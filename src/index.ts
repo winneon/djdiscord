@@ -61,8 +61,9 @@ bot.login(bot.config.token);
 process.stdin.resume();
 process.on("SIGINT", () => {
 	function logout(){
-		bot.client.logout();
-		process.exit(0);
+		bot.client.destroy()
+			.then(() => process.exit(0))
+			.catch(error => process.exit(0));
 	}
 
 	console.log("Terminating...");

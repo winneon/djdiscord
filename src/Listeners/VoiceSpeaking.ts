@@ -9,7 +9,7 @@ class VoiceSpeaking implements Listener {
 		let voice: any = bot.client.voiceConnection;
 
 		if (voice.voiceChannel.id === channel.id && bot.client.user.id !== user.id){
-			voice.setVolume(user.speaking ? 0.5 : 1.0);
+			voice.setVolume(user.speaking ? 0.1 : 1.0);
 		}
 	}
 }
