@@ -18,9 +18,9 @@ class Config {
 		try {
 			let config: any = require("../config.json");
 
-			this.commandPrefix = config.command_prefix;
-			this.token = config.token;
-			this.staffRole = config.staff_role;
+			this.commandPrefix = config.command_prefix || process.env.DJ_COMMAND_PREFIX;
+			this.token = config.token || process.env.DJ_TOKEN;
+			this.staffRole = config.staff_role || process.env.DJ_STAFF_ROLE;
 
 			this.linked = {
 				text: undefined,
