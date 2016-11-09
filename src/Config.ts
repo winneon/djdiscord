@@ -15,12 +15,10 @@ class Config {
 	};
 
 	constructor(){
-		try {
-			let config: any = require("../config.json");
+		let config: any = undefined;
 
-			this.commandPrefix = config.command_prefix || process.env.DJ_COMMAND_PREFIX;
-			this.token = config.token || process.env.DJ_TOKEN;
-			this.staffRole = config.staff_role || process.env.DJ_STAFF_ROLE;
+		try {
+			config = require("../config.json");
 
 			this.linked = {
 				text: undefined,
@@ -28,6 +26,15 @@ class Config {
 			};
 		} catch (e){
 			console.error("The provided config is invalid. Please create a proper config from the example.");
+			process.exit(1);
+		}
+
+		if (config){
+			this.commandPrefix = config.command_prefix || process.env.DJ_COMMAND_PREFIX;
+			this.token = config.token || process.env.DJ_TOKEN;
+			this.staffRole = config.staff_role || process.env.DJ_STAFF_ROLE;
+		} else {
+			console.error("The config was not oaded properly. You probably did something bad.");
 			process.exit(1);
 		}
 
