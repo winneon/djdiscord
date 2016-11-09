@@ -25,8 +25,10 @@ class Config {
 				voice: undefined
 			};
 		} catch (e){
-			console.error("The provided config is invalid. Please create a proper config from the example.");
-			process.exit(1);
+			if (!(process.env.DJ_COMMAND_PREFIX && process.env.DJ_TOKEN && process.env.DJ_STAFF_ROLE)){
+				console.error("The provided config is invalid. Please create a proper config from the example.");
+				process.exit(1);
+			}
 		}
 
 		if (config){
