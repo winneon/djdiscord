@@ -34,5 +34,8 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.6",
     "gulp-typings": "^2.0.0"
+  },
+  "engines": {
+    "node": "6.8.0"
   }
 }
