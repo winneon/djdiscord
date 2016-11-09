@@ -8,7 +8,6 @@
   },
   "license": "MIT",
   "author": "Jesse Bryan <winneonsword@gmail.com> (http://winneon.moe/)",
-  "main": "./entry.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/winneon/djdiscord.git"
@@ -16,7 +15,8 @@
   "scripts": {
     "preversion": "git add --all",
     "version": "git add --all",
-    "postversion": "git push origin master && git push --tags"
+    "postversion": "git push origin master && git push --tags",
+    "start": "node lib/index.js"
   },
   "dependencies": {
     "console-stamp": "^0.2.2",
