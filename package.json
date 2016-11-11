@@ -1,16 +1,16 @@
 {
-  "name": "djdiscord",
+  "name": "djdiscord-legacy",
   "version": "1.0.0",
-  "description": "The t4i dJ, repurposed for Discord.",
-  "homepage": "https://github.com/winneon/djdiscord",
+  "description": "A classy music bot, designed for Discord.",
+  "homepage": "https://github.com/winneon/djdiscord-legacy",
   "bugs": {
-    "url": "https://github.com/winneon/djdiscord/issues"
+    "url": "https://github.com/winneon/djdiscord-legacy/issues"
   },
   "license": "MIT",
   "author": "Jesse Bryan <winneonsword@gmail.com> (http://winneon.moe/)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/winneon/djdiscord.git"
+    "url": "https://github.com/winneon/djdiscord-legacy.git"
   },
   "scripts": {
     "preversion": "git add --all",
@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "console-stamp": "^0.2.2",
-    "discord.js": "github:hydrabolt/discord.js#indev",
+    "discord.js": "8.1.0",
     "source-map-support": "^0.4.1",
     "valid-url": "^1.0.9",
     "vinyl-source-stream": "^1.1.0",
